@@ -15,5 +15,8 @@ do_image_sdimg[depends] += "imx-boot:do_deploy"
 
 
 MENDER_STORAGE_DEVICE_imx8mmea-ucom = "/dev/mmcblk2"
+MENDER_STORAGE_DEVICE_imx8mnea-ucom = "/dev/mmcblk2"
+MENDER_STORAGE_DEVICE_imx8mqea-ucom = "/dev/mmcblk0"
+
 MENDER_STORAGE_TOTAL_SIZE_MB = "1024"
 
