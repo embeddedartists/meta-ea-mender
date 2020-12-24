@@ -1,31 +1,56 @@
 diff --git a/configs/mx8mnea-ucom_defconfig b/configs/mx8mnea-ucom_defconfig
-index 71d3b69..ece6e6e 100644
+index 3f377a4706..c135a08191 100644
 --- a/configs/mx8mnea-ucom_defconfig
 +++ b/configs/mx8mnea-ucom_defconfig
-@@ -72,3 +72,12 @@ CONFIG_SPL_IMX_ROMAPI_SUPPORT=y
- CONFIG_SPL_IMX_ROMAPI_LOADADDR=0x48000000
+@@ -44,7 +44,7 @@ CONFIG_DEFAULT_FDT_FILE="imx8mn-ea-ucom-kit_v2.dtb"
+ CONFIG_BOARD_LATE_INIT=y
+ CONFIG_BOARD_EARLY_INIT_F=y
+ CONFIG_ENV_IS_IN_MMC=y
+-CONFIG_ENV_IS_NOWHERE=y
++# CONFIG_ENV_IS_NOWHERE is not set
+ CONFIG_CMD_ERASEENV=y
+ CONFIG_CMD_CLK=y
+ CONFIG_CMD_FUSE=y
+@@ -70,8 +70,8 @@ CONFIG_FASTBOOT_UUU_SUPPORT=y
+ CONFIG_FASTBOOT_BUF_ADDR=0x42800000
+ CONFIG_FASTBOOT_BUF_SIZE=0x40000000
+ CONFIG_FASTBOOT_FLASH=y
+-CONFIG_ENV_SIZE=0x2000
+-CONFIG_ENV_OFFSET=0x1FE000
++CONFIG_ENV_SIZE=0x20000
++CONFIG_ENV_OFFSET=0x800000
+ CONFIG_DM_GPIO=y
+ CONFIG_DM_I2C=y
+ CONFIG_SYS_I2C_MXC=y
+@@ -126,3 +126,16 @@ CONFIG_VIDEO_ADV7535=y
+ CONFIG_SYS_WHITE_ON_BLACK=y
  
  CONFIG_SPL_GZIP=y
++
 +
 +# Mender support
 +CONFIG_BOOTCOUNT_LIMIT=y
 +CONFIG_BOOTCOUNT_ENV=y
++CONFIG_SYS_REDUNDAND_ENVIRONMENT=y
++CONFIG_ENV_OFFSET_REDUND=0x1000000
 +
 +# Improve boot time. The function ext4load takes about 40s to load
 +# the kernel image (19 MB) without block cache being enabled
 +CONFIG_BLOCK_CACHE=y
 +
++
 diff --git a/include/configs/mx8mnea-ucom.h b/include/configs/mx8mnea-ucom.h
-index c29c956..aba6779 100644
+index 46e4e43460..0b4581af28 100644
 --- a/include/configs/mx8mnea-ucom.h
 +++ b/include/configs/mx8mnea-ucom.h
-@@ -135,25 +135,25 @@
- 	CONFIG_MFG_ENV_SETTINGS \
+@@ -90,26 +90,26 @@
  	JAILHOUSE_ENV \
+ 	M_CORE_ENV \
  	"script=boot.scr\0" \
 -	"image=Image\0" \
 +	"image=boot/Image\0" \
- 	"console=ttymxc1,115200 earlycon=ec_imx6q,0x30890000,115200\0" \
+ 	"splashimage=0x50000000\0" \
+ 	"console=ttymxc1,115200\0" \
  	"fdt_addr=0x43000000\0"			\
  	"fdt_high=0xffffffffffffffff\0"		\
  	"boot_fdt=try\0" \
@@ -50,10 +75,13 @@ index c29c956..aba6779 100644
  	"mmcboot=echo Booting from mmc ...; " \
  		"run mmcargs; " \
  		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-@@ -192,9 +192,13 @@
- 		   "if run loadbootscript; then " \
- 			   "run bootscript; " \
- 		   "else " \
+@@ -145,14 +145,14 @@
+ 
+ #define CONFIG_BOOTCOMMAND \
+ 	   "mmc dev ${mmcdev}; if mmc rescan; then " \
+-		   "if run loadbootscript; then " \
+-			   "run bootscript; " \
+-		   "else " \
 +			   "run mender_setup; " \
  			   "if run loadimage; then " \
  				   "run mmcboot; " \
@@ -63,26 +91,14 @@ index c29c956..aba6779 100644
 +				   "run mender_try_to_recover; " \
 +				   "run netboot; " \
  			   "fi; " \
- 		   "fi; " \
+-		   "fi; " \
  	   "else booti ${loadaddr} - ${fdt_addr}; fi"
-@@ -214,7 +218,8 @@
- #define CONFIG_ENV_OVERWRITE
  
- /* Default ENV offset is 4MB for SD/EMMC/FSPI, but NAND uses 60MB offset, overridden by env_get_offset */
--#define CONFIG_ENV_OFFSET		(SZ_2M - CONFIG_ENV_SIZE)
-+/* Use mender default instead */
-+/*#define CONFIG_ENV_OFFSET		(SZ_2M - CONFIG_ENV_SIZE)*/
- 
- #define CONFIG_ENV_SECT_SIZE		(64 * 1024)
- #define CONFIG_ENV_SPI_BUS		CONFIG_SF_DEFAULT_BUS
-@@ -222,9 +227,10 @@
- #define CONFIG_ENV_SPI_MODE		CONFIG_SF_DEFAULT_MODE
+ /* Link Definitions */
+@@ -176,7 +176,7 @@
  #define CONFIG_ENV_SPI_MAX_HZ		CONFIG_SF_DEFAULT_SPEED
  
--#define CONFIG_ENV_SIZE			SZ_8K
-+/* Use mender default instead */
-+/*#define CONFIG_ENV_SIZE			SZ_8K*/
- #define CONFIG_SYS_MMC_ENV_DEV		1   /* USDHC2 */
+ #define CONFIG_SYS_MMC_ENV_DEV		2   /* USDHC2 */
 -#define CONFIG_SYS_MMC_ENV_PART		1   /* 0=user area, 1=1st MMC boot part., 2=2nd MMC boot part. */
 +#define CONFIG_SYS_MMC_ENV_PART		0   /* 0=user area, 1=1st MMC boot part., 2=2nd MMC boot part. */
  #define CONFIG_MMCROOT			"/dev/mmcblk1p2"  /* USDHC2 */

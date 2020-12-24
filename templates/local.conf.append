@@ -1,3 +1,6 @@
+MENDER_FEATURES_ENABLE_append = " mender-uboot mender-image-sd"
+MENDER_FEATURES_DISABLE_append = " mender-grub mender-image-uefi"
+
 PREFERRED_PROVIDER_u-boot-fw-utils = "u-boot-fw-utils-mender-auto-provided"
 IMAGE_FSTYPES_remove = "tar.bz2 ext4 sdcard.bz2"
 
@@ -5,7 +8,7 @@ IMAGE_FSTYPES_remove = "tar.bz2 ext4 sdcard.bz2"
 # for anything beside to satisfy the build dependency
 IMAGE_BOOT_FILES_append = "u-boot-${MACHINE}.bin"
 
-MENDER_IMAGE_BOOTLOADER_FILE = "imx-boot-${MACHINE}-sd.bin"
+MENDER_IMAGE_BOOTLOADER_FILE = "imx-boot"
 
 # offset to bootloader in number of sectors (512 bytes)
 # for imx8mm it is 33K -> 66 sectors
@@ -18,5 +21,6 @@ MENDER_STORAGE_DEVICE_imx8mmea-ucom = "/dev/mmcblk2"
 MENDER_STORAGE_DEVICE_imx8mnea-ucom = "/dev/mmcblk2"
 MENDER_STORAGE_DEVICE_imx8mqea-ucom = "/dev/mmcblk0"
 
-MENDER_STORAGE_TOTAL_SIZE_MB = "1024"
+MENDER_BOOT_PART_SIZE_MB = "32"
+MENDER_STORAGE_TOTAL_SIZE_MB = "2048"
 
